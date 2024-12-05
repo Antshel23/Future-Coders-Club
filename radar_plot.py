@@ -19,7 +19,6 @@ def plot_player(df, player_name, season, position, team):
 
     if player_data.empty:
         print("N/A: Player or season does not exist.")
-        fig, ax = plt.subplots(figsize=(8, 8.5), subplot_kw=dict(polar=True))
         return None
 
     # Position-specific columns
