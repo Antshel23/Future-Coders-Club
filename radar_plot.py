@@ -3,13 +3,11 @@ import matplotlib.pyplot as plt
 from mplsoccer import PyPizza, FontManager
 import numpy as np
 
-def get_black_shade(value):
-    """Return a black color that darkens with higher values (0-100)."""
-    # Define shades of black (dull grey to pure black)
-    min_black = np.array([150, 150, 150])  # Dull grey
-    max_black = np.array([0, 0, 0])        # Pure black
-    shade = min_black + (max_black - min_black) * (value / 100)
-    return f'#{int(shade[0]):02x}{int(shade[1]):02x}{int(shade[2]):02x}'
+def get_purp_shade(value):
+    min_purp = np.array([200, 180, 255])
+    max_purp = np.array([75, 0, 110])
+    color = min_purp + (max_purp - min_purp) * (value / 100)
+    return f"#{int(color[0]):02X}{int(color[1]):02X}{int(color[2]):02X}"
 
 def plot_player(df, player_name, season, position, team):
     player_data = df[(df['Player'] == player_name) & (df['Season'] == season) & (df['Team within selected timeframe'] == team)]
@@ -44,7 +42,7 @@ def plot_player(df, player_name, season, position, team):
     params = selected_columns
 
     # Set slice colors based on value intensity (using get_black_shade)
-    slice_colors = [get_black_shade(v) for v in formatted_values]
+    slice_colors = [get_purp_shade(v) for v in formatted_values]
 
     # Create figure + assign figure background color
     fig, ax = plt.subplots(figsize=(8, 8.5), subplot_kw=dict(polar=True))
