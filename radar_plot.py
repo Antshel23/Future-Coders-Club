@@ -3,16 +3,13 @@ import matplotlib.pyplot as plt
 from mplsoccer import PyPizza, FontManager
 import numpy as np
 
-def get_blue_shade(value):
-    """Return a blue color that darkens with higher values (0-100)."""
-    # Define shades of blue
-    min_blue = np.array([173, 216, 230])  # (LightSkyBlue)
-    max_blue = np.array([0, 0, 139])      # (DarkBlue)
-
-    # Interpolate color based on value (0-100)
-    color = min_blue + (max_blue - min_blue) * (value / 100)
-    return f"#{int(color[0]):02X}{int(color[1]):02X}{int(color[2]):02X}"
-
+def get_black_shade(value):
+    """Return a black color that darkens with higher values (0-100)."""
+    # Define shades of black (dull grey to pure black)
+    min_black = np.array([150, 150, 150])  # Dull grey
+    max_black = np.array([0, 0, 0])        # Pure black
+    shade = min_black + (max_black - min_black) * (value / 100)
+    return f'#{int(shade[0]):02x}{int(shade[1]):02x}{int(shade[2]):02x}'
 
 def plot_player(df, player_name, season, position, team):
     player_data = df[(df['Player'] == player_name) & (df['Season'] == season) & (df['Team within selected timeframe'] == team)]
@@ -30,38 +27,41 @@ def plot_player(df, player_name, season, position, team):
         'FW': ['Accurate short / medium passes, %', 'Passes to penalty area per 90', "Successful dribbles per 90", 'Deep completions per 90', 'xA per 90', 'xA/shot assist', 'xG per 90', 'xG/shot', 'xG performance', 'Dangerous attacking actions per 90']
     }
 
-    # Select columns based on position, with a default if position is not found
+    # Select columns based on position
     selected_columns = position_columns.get(position)
-    
-    # Get values for selected columns
+
+    # Get values for selected columns and flatten into 2d
     values = player_data[selected_columns].values.flatten()
 
     # Format values into integers - to remove decimals as it makes plot look worse
     formatted_values = [int(round(v)) for v in values]
 
-    # Error handling if 
+    # Error handling if x required metrics != x values
     if len(selected_columns) != len(formatted_values):
         print(f"Error: Length of params ({len(selected_columns)}) and values ({len(formatted_values)}) do not match for player {player_name} in season {season}.")
         return None
 
     params = selected_columns
 
-    # Calls get blue shade func
-    slice_colors = [get_blue_shade(value) for value in formatted_values]
+    # Set slice colors based on value intensity (using get_black_shade)
+    slice_colors = [get_black_shade(v) for v in formatted_values]
 
-    # Create figure + assign figure background color and polar axes
+    # Create figure + assign figure background color
     fig, ax = plt.subplots(figsize=(8, 8.5), subplot_kw=dict(polar=True))
     fig.patch.set_facecolor("#0E1118")
+
+    # Radar chart (graph) background color to white
+    ax.set_facecolor("#FFFFFF")
 
     # Standard formatting to create radar/pizza copied from mpl soccer
     baker = PyPizza(
         params=params,
-        background_color="#2b2b2b",
-        straight_line_color="#2b2b2b",
+        background_color="#FFFFFF",  # Set the radar chart background to white
+        straight_line_color="#000000",  # Light gray grid lines
         straight_line_lw=1,
         last_circle_lw=0,
         other_circle_lw=0,
-        inner_circle_size=20
+        inner_circle_size=0
     )
 
     baker.make_pizza(
@@ -70,23 +70,25 @@ def plot_player(df, player_name, season, position, team):
         color_blank_space="same",
         slice_colors=slice_colors,
         value_colors=["#FFFFFF"] * len(selected_columns),
-        value_bck_colors=["#2b2b2b"] * len(selected_columns),
+        value_bck_colors=["#000000"] * len(selected_columns),
         blank_alpha=0.4,
-        kwargs_slices=dict(edgecolor="#F2F2F2", zorder=2, linewidth=1),
+        kwargs_slices=dict(edgecolor="#000000", zorder=2, linewidth=1),
         kwargs_params=dict(color="#FFFFFF", fontsize=8),
-        kwargs_values=dict(color="#FFFFFF", fontsize=10, zorder=3, 
-                           bbox=dict(edgecolor="#FFFFFF", facecolor="#2b2b2b", boxstyle="round,pad=0.2", lw=1))
+        kwargs_values=dict(color="#000000", fontsize=10, zorder=3,
+                           bbox=dict(edgecolor="#FFFFFF", facecolor="#000000", boxstyle="round,pad=0.2", lw=1))
     )
 
-# Captions for player name and season, xy for position
-    fig.text(0.515, 0.965, player_name, size=16, ha="center", 
+    caption = (player_name + ', ' + team + ', ' + season) 
+    # Captions for player name and season
+    fig.text(0.516, 0.918, caption, size=12, ha="center",
+             fontproperties=FontManager('https://raw.githubusercontent.com/googlefonts/roboto/main/src/hinted/Roboto-Regular.ttf').prop, color="#FC554E")
+    fig.text(0.516, 0.955, 'FUTURE CODERS CLUB', size=32, ha="center",
+             fontproperties=FontManager('https://raw.githubusercontent.com/google/fonts/main/apache/robotoslab/RobotoSlab[wght].ttf').prop, color="#fc554e")
+    fig.text(0.516, 0.0555, 'Want to learn to create visuals like this? Visit futurecodersclub.com', size=10, ha="center",
              fontproperties=FontManager('https://raw.githubusercontent.com/googlefonts/roboto/main/src/hinted/Roboto-Regular.ttf').prop, color="#FFFFFF")
-    fig.text(0.515, 0.923, season, size=13, ha="center", 
-             fontproperties=FontManager('https://raw.githubusercontent.com/google/fonts/main/apache/robotoslab/RobotoSlab[wght].ttf').prop, color="#FFFFFF")
 
     return fig
 
-'''
 data = {
     'Player': ['Player A', 'Player B', 'Player C', 'Player D'],
     'Season': ['2023/24', '2023/24', '2023/24', '2023/24'],
@@ -120,4 +122,3 @@ df = pd.DataFrame(data)
 # Example function call
 fig = plot_player(df, player_name='Player A', season='2023/24', position='CB', team='Team X')
 plt.show()
-'''
