@@ -1,0 +1,10 @@
+goal,Harry Kane,Tottenham,Chelsea
+pass,Kevin De Bruyne,Man City,Liverpool
+assist,Son Heung-min,Tottenham,Chelsea
+goal,Mohamed Salah,Liverpool,Man City
+pass,James Maddison,Leicester,Arsenal
+assist,Bruno Fernandes,Man Utd,West Ham
+goal,Pierre-Emerick Aubameyang,Arsenal,Leicester
+pass,Jack Grealish,Aston Villa,Wolves
+assist,Trent Alexander-Arnold,Liverpool,Man City
+goal,Dominic Calvert-Lewin,Everton,Man Utd
